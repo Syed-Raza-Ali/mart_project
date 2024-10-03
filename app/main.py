@@ -3,7 +3,6 @@ from fastapi import Depends, FastAPI
 from sqlmodel import Session, Field, SQLModel,create_engine
 
 from app.settings import DATABASE_URL
-from app.user_model import User, UserBase
 
 
 

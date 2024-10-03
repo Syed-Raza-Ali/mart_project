@@ -57,8 +57,8 @@ The project uses SQLModel for managing the connection and models for the Postgre
 
 # User Table
 
-`user_id:` Primary key (Auto-incremented)
-`user_name:` User's name
-`user_address:` User's address
-`user_email:` User's email
-`user_password:` User's password (should be hashed in production)
+- `user_id:` Primary key (Auto-incremented)
+- `user_name:` User's name
+- `user_address:` User's address
+- `user_email:` User's email
+- `user_password:` User's password (should be hashed in production)
