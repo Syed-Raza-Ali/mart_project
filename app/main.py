@@ -1,6 +1,6 @@
 from typing import Annotated, Optional
-from fastapi import Depends, FastAPI
-from sqlmodel import Session, Field, SQLModel,create_engine
+from fastapi import Depends, FastAPI, HTTPException
+from sqlmodel import Session, Field, SQLModel,create_engine, select
 from app.settings import DATABASE_URL
 
 # create a user base  class for store user data in database 
@@ -55,7 +55,7 @@ def get_session():
         yield session
 
 
-
+# Dependency inection to get a session
 DB_Session = Annotated[Session, Depends(get_session)]
 
 
@@ -83,8 +83,23 @@ def add_user_into_db(form_data : UserBase, session : Session):
 
     return user_info
 
-
+# post route to add the new user in to database
 @app.post('/api/add_user')
 def get_user(new_user: UserBase ,session : DB_Session):
     add_user = add_user_into_db(new_user, session)
     return add_user
+
+
+# function to retreive data from database
+def get_user_from_db(session : DB_Session):
+    statement = select(User)
+    user_list = session.exec(statement).all()
+    if not user_list:
+        raise HTTPException(status_code=404, detail="Not Found")
+    else:
+        return user_list
+    
+# api get user
+@app.get('/get_user')
+def get_user(session: DB_Session):
+    return
