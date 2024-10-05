@@ -17,7 +17,11 @@ class User(UserBase, table=True):
     user_id: Optional[int] = Field(default=None, primary_key = True)
 
 
-
+# create a user update class for update user
+class UserUpdateModel(SQLModel):
+    user_name : str
+    user_address : str
+    user_password : str
 
  
 # .replace() for replace postgresql to postgresql + psycopg for using psycopg in postgrsql
@@ -100,6 +104,28 @@ def get_user_from_db(session : DB_Session):
         return user_list
     
 # api get user
-@app.get('/get_user')
+@app.get('/api/get_user')
 def get_user(session: DB_Session):
-    return
+    users = get_user_from_db(session)
+    return users
+
+
+def update_user_from_db(selected_id: int, form_data:UserUpdateModel, session: DB_Session):
+    statement = select(User).where(User.user_id == selected_id)
+    selected_user = session.exec(statement).first()
+    if not selected_user:
+        raise HTTPException(status_code=404, detail="User not Found")
+    # from database         = from form data
+    selected_user.user_name = form_data.user_name
+    selected_user.user_address = form_data.user_address
+    selected_user.user_password = form_data.user_password
+
+    session.add(selected_user)
+    session.commit()
+    session.refresh(selected_user)
+    return selected_user
+
+@app.put('/api/update_user')
+def update_user(id:int, user_details: UserUpdateModel, session: DB_Session):
+    user = update_user_from_db(id, user_details, session)
+    return user
